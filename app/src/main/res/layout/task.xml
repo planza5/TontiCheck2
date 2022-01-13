@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="false">
+
+
+    <CheckBox
+        android:id="@+id/cbTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/editTaskItemName"
+        android:selectAllOnFocus="true"
+        android:textSize="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:inputType="textNoSuggestions"
+        android:imeOptions="actionDone" />
+
+
+
+    <ImageButton
+        android:padding="20dp"
+        android:layout_gravity="center"
+        android:id="@+id/buttonTaskUpItem"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="3dp"
+        android:background="@drawable/up" />
+
+    <ImageButton
+        android:padding="20dp"
+        android:layout_gravity="center"
+        android:id="@+id/buttonTaskDownItem"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="3dp"
+        android:background="@drawable/down" />
+
+    <ImageButton
+        android:padding="20dp"
+        android:layout_gravity="center"
+        android:id="@+id/buttonRemoveTaskItem"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/cross" />
+
+
+
+</LinearLayout>

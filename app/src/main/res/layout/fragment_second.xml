@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1"
+        android:orientation="horizontal">
+
+        <ListView
+            android:id="@+id/tontitaskview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:dividerHeight="2px"></ListView>
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:layout_marginVertical="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/alarmDateText"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="20/12/2022"/>
+
+            <TextView
+                android:id="@+id/alarmTimeText"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="22:55"/>
+
+            </LinearLayout>
+
+            <ImageButton
+                android:layout_marginVertical="10dp"
+                android:id="@+id/buttonAlarm"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/alarm_on"/>
+
+            <ImageButton
+                android:layout_marginVertical="10dp"
+                android:id="@+id/buttonDelAlarm"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/cross"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+
+
+        <ImageButton
+            android:layout_margin="10dp"
+            android:id="@+id/buttonTaskAdd"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/plus"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
