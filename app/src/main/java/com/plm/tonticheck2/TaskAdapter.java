@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,8 +46,25 @@ public class TaskAdapter extends ArrayAdapter<TontiTask> {
         setupDownButton(position, convertView, (ListView) parent);
         setupRemoveButton(position, convertView);
         setupEditbox(position, convertView);
+        setupLongTap(position,convertView);
 
         return convertView;
+    }
+
+    private void setupLongTap(int position, View convertView) {
+        final ImageButton upButton = (ImageButton) convertView.findViewById(R.id.buttonTaskUpItem);
+        upButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayMenu(position,v);
+            }
+        });
+    }
+
+    private void displayMenu(int position, View v) {
+        PopupMenu pmenu=new PopupMenu(this.getContext(),v);
+        pmenu.inflate(R.menu.menu_popup_task);
+        pmenu.show();
     }
 
     private void setupCheckButton(int position, View convertView) {

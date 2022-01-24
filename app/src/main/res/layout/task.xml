@@ -14,6 +14,7 @@
 
     <EditText
         android:id="@+id/editTaskItemName"
+        android:clickable="true"
         android:selectAllOnFocus="true"
         android:textSize="15dp"
         android:layout_width="match_parent"
@@ -31,7 +32,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginRight="3dp"
-        android:background="@drawable/up" />
+        android:background="@drawable/menu" />
 
     <ImageButton
         android:padding="20dp"
