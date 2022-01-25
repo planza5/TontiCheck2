@@ -28,28 +28,12 @@
     <ImageButton
         android:padding="20dp"
         android:layout_gravity="center"
-        android:id="@+id/buttonTaskUpItem"
+        android:id="@+id/taskMenuItem"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/menu" />
 
-    <ImageButton
-        android:padding="20dp"
-        android:layout_gravity="center"
-        android:id="@+id/buttonTaskDownItem"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="3dp"
-        android:background="@drawable/down" />
-
-    <ImageButton
-        android:padding="20dp"
-        android:layout_gravity="center"
-        android:id="@+id/buttonRemoveTaskItem"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/cross" />
 
 
 

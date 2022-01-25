@@ -23,28 +23,12 @@
     <ImageButton
         android:padding="20dp"
         android:layout_gravity="center"
-        android:id="@+id/buttonTaskListUpItem"
+        android:id="@+id/taskListMenuItem"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginRight="3dp"
-        android:background="@drawable/up" />
+        android:background="@drawable/menu" />
 
-    <ImageButton
-        android:padding="20dp"
-        android:layout_gravity="center"
-        android:id="@+id/buttonTaskListDownItem"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="3dp"
-        android:background="@drawable/down" />
-
-    <ImageButton
-        android:padding="20dp"
-        android:layout_gravity="center"
-        android:id="@+id/buttonRemoveTaskListItem"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/cross" />
 
     <ImageButton
         android:padding="20dp"

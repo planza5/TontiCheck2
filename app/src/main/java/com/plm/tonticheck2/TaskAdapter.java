@@ -3,6 +3,7 @@ package com.plm.tonticheck2;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -10,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -42,17 +42,14 @@ public class TaskAdapter extends ArrayAdapter<TontiTask> {
         }
 
         setupCheckButton(position, convertView);
-        setupUpButton(position, convertView, (ListView) parent);
-        setupDownButton(position, convertView, (ListView) parent);
-        setupRemoveButton(position, convertView);
         setupEditbox(position, convertView);
-        setupLongTap(position,convertView);
+        setupPopupMenu(position,convertView);
 
         return convertView;
     }
 
-    private void setupLongTap(int position, View convertView) {
-        final ImageButton upButton = (ImageButton) convertView.findViewById(R.id.buttonTaskUpItem);
+    private void setupPopupMenu(int position, View convertView) {
+        final ImageButton upButton = (ImageButton) convertView.findViewById(R.id.taskMenuItem);
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,10 +58,33 @@ public class TaskAdapter extends ArrayAdapter<TontiTask> {
         });
     }
 
-    private void displayMenu(int position, View v) {
-        PopupMenu pmenu=new PopupMenu(this.getContext(),v);
-        pmenu.inflate(R.menu.menu_popup_task);
-        pmenu.show();
+    private void displayMenu(int position, View menuButtonView) {
+        PopupMenu popupmenu=new PopupMenu(this.getContext(),menuButtonView);
+        popupmenu.inflate(R.menu.menu_popup_task);
+        popupmenu.show();
+
+        if(position==0){
+            popupmenu.getMenu().findItem(R.id.item_up).setVisible(false);
+        }else if(position==getCount()-1){
+            popupmenu.getMenu().findItem(R.id.item_down).setVisible(false);
+        }
+
+        popupmenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if(item.getItemId()==R.id.item_up){
+                    moveTask(position,  0,  true);
+                }else if(item.getItemId()==R.id.item_down){
+                    moveTask(position,  getCount()-1,  false);
+                }else if(item.getItemId()==R.id.delete_item){
+                    TontiTask task=getItem(position);
+                    remove(task);
+                    listener.save();
+                }
+
+                return false;
+            }
+        });
     }
 
     private void setupCheckButton(int position, View convertView) {
@@ -80,72 +100,34 @@ public class TaskAdapter extends ArrayAdapter<TontiTask> {
         });
     }
 
-    private void setupUpButton(int position, View convertView, ListView parent) {
-        final ImageButton upButton = (ImageButton) convertView.findViewById(R.id.buttonTaskUpItem);
 
-        upButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(getCount()<2){
-                    return;
-                }else if(position ==0){
-                    return;
-                }else{
-                    ListView listview= parent;
+    private void moveTask(int position, int limit, boolean up) {
+        int i1,i2;
 
-                    TontiTask ttA=getItem(position -1);
-                    TontiTask ttB=getItem(position);
+        if(up){
+            i1=position-1;
+            i2=position;
+        }else{
+            i1=position;
+            i2=position+1;
+        }
 
-                    remove(ttA);
-                    remove(ttB);
+        if (getCount() < 2) {
+            return;
+        } else if (position == limit) {
+            return;
+        } else {
+            TontiTask ttA = getItem(i1);
+            TontiTask ttB = getItem(i2);
 
-                    insert(ttB, position -1);
-                    insert(ttA, position);
+            remove(ttA);
+            remove(ttB);
 
-                    listener.save();
-                }
-            }
-        });
-    }
+            insert(ttB, i1);
+            insert(ttA, i2);
 
-    private void setupDownButton(int position, View convertView, ListView parent) {
-        final ImageButton downButton = (ImageButton) convertView.findViewById(R.id.buttonTaskDownItem);
-
-        downButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(getCount()<2){
-                    return;
-                }else if(position ==getCount()-1){
-                    return;
-                }else{
-                    ListView listview= parent;
-
-                    TontiTask ttListA=getItem(position);
-                    TontiTask ttListB=getItem(position +1);
-
-                    remove(ttListA);
-                    remove(ttListB);
-
-                    insert(ttListB, position);
-                    insert(ttListA, position +1);
-
-                    listener.save();
-                }
-            }
-        });
-    }
-
-    private void setupRemoveButton(int position, View convertView) {
-        final ImageButton removeButton = (ImageButton) convertView.findViewById(R.id.buttonRemoveTaskItem);
-        removeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TontiTask task=getItem(position);
-                remove(task);
-                listener.save();
-            }
-        });
+            listener.save();
+        }
     }
 
     private void setupEditbox(int position, View convertView) {
