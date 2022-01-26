@@ -119,22 +119,15 @@ public class SecondFragment extends Fragment implements TaskListener{
     private void setupAlarmButton(View view) throws ParseException{
         //getting day, month, year, hour, minute for pickers
         String alarm=app.list.get(position).alarm;
-        int day,month,year,hour,minute;
-        Calendar calendar=null;
+        Calendar calendar=Calendar.getInstance();
 
-        if(alarm==null){
-            calendar=Calendar.getInstance();
-        }else{
-            calendar=Calendar.getInstance();
+        if(alarm!=null){
             calendar.setTime(sdf.parse(alarm));
-            AlarmUtils.setAlarm(getContext(),calendar,app.list.get(position).name);
+        }else{
+            calendar.add(Calendar.MINUTE,1);
         }
 
-        day=calendar.get(Calendar.DAY_OF_MONTH);
-        month=calendar.get(Calendar.MONTH);
-        year=calendar.get(Calendar.YEAR);
-        hour=calendar.get(Calendar.HOUR_OF_DAY);
-        minute=calendar.get(Calendar.MINUTE);
+
 
 
         binding.buttonAlarm.setOnClickListener(new View.OnClickListener() {
@@ -150,26 +143,30 @@ public class SecondFragment extends Fragment implements TaskListener{
                             @Override
                             public void onTimeSet(TimePicker timePicker, int _hour, int _minute) {
                                 Calendar calendar=Calendar.getInstance();
-                                calendar.set(Calendar.DAY_OF_MONTH,_month);
-                                calendar.set(Calendar.MONTH,_month);
                                 calendar.set(Calendar.YEAR,_year);
+                                calendar.set(Calendar.MONTH,_month);
+
+                                calendar.set(Calendar.DAY_OF_MONTH,_day);
                                 calendar.set(Calendar.HOUR,_hour);
                                 calendar.set(Calendar.MINUTE,_minute);
 
                                 app.list.get(position).alarm=sdf.format(calendar.getTime());
                                 binding.buttonAlarm.setBackgroundResource(R.drawable.alarm_on);
+
+                                AlarmUtils.setAlarm(getContext(),calendar,app.list.get(position).name);
+
                                 setupDelAlarm();
                                 setupAlarmText();
                                 save();
                             }
-                        }, hour, minute, true);//Yes 24 hour time
+                        }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), true);//Yes 24 hour time
                         mTimePicker.setTitle("Select Time");
                         mTimePicker.show();
                     }
-                }, year, month, day);
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
                 dp.setTitle("Select Date");
-                dp.updateDate(year,month,day);
+                dp.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
                 dp.show();
             }
         });
