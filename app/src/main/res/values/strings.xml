@@ -13,4 +13,5 @@
     <string name="item_up">Mover Arriba</string>
     <string name="item_down">Mover abajo</string>
     <string name="delete_item">Eliminar</string>
+    <string name="default_checklist_name">New Checklist...</string>
 </resources>

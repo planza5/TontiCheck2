@@ -108,6 +108,7 @@ public class SecondFragment extends Fragment implements TaskListener{
                     save();
                     binding.buttonDelAlarm.setVisibility(View.INVISIBLE);
                     setupAlarmText();
+                    AlarmUtils.cancelAlarm(getContext(),app.list.get(position).id);
                 }
             });
             binding.buttonDelAlarm.setVisibility(View.VISIBLE);
@@ -147,19 +148,21 @@ public class SecondFragment extends Fragment implements TaskListener{
                                 calendar.set(Calendar.MONTH,_month);
 
                                 calendar.set(Calendar.DAY_OF_MONTH,_day);
-                                calendar.set(Calendar.HOUR,_hour);
+                                calendar.set(Calendar.HOUR_OF_DAY,_hour);
                                 calendar.set(Calendar.MINUTE,_minute);
+                                calendar.set(Calendar.SECOND,0);
 
                                 app.list.get(position).alarm=sdf.format(calendar.getTime());
                                 binding.buttonAlarm.setBackgroundResource(R.drawable.alarm_on);
 
-                                AlarmUtils.setAlarm(getContext(),calendar,app.list.get(position).name);
+                                AlarmUtils.setAlarm(getContext(),calendar,app.list.get(position).id);
+
 
                                 setupDelAlarm();
                                 setupAlarmText();
                                 save();
                             }
-                        }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), true);//Yes 24 hour time
+                        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);//Yes 24 hour time
                         mTimePicker.setTitle("Select Time");
                         mTimePicker.show();
                     }

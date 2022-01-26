@@ -63,7 +63,7 @@ public class FirstFragment extends Fragment implements TaskListListener {
         binding.buttonTaskListAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                taskListAdapter.add(new TontiTaskList());
+                taskListAdapter.add(new TontiTaskList(tontiApp));
                 save();
             }
         });

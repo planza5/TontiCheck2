@@ -43,6 +43,11 @@ public class GsonUtils {
         }
     }
 
+    public static void deleteFile(Context ctx){
+        File file = new File(ctx.getFilesDir(), ctx.getString(R.string.json_file));
+        file.delete();
+    }
+
     public static File getFile(Context ctx) {
         File file = new File(ctx.getFilesDir(), ctx.getString(R.string.json_file));
         return file;
