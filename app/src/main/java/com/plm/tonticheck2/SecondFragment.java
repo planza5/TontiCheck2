@@ -1,35 +1,40 @@
 package com.plm.tonticheck2;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.plm.tonticheck2.databinding.FragmentSecondBinding;
 import com.plm.tonticheck2.model.TontiApp;
 import com.plm.tonticheck2.model.TontiTask;
+import com.plm.tonticheck2.model.TontiTaskList;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public class SecondFragment extends Fragment implements TaskListener{
     private FragmentSecondBinding binding;
+    private AlarmUtils alarmUtils;
     private static SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     //TODO pasar esta variable desde firstfragment de otra forma
@@ -38,13 +43,24 @@ public class SecondFragment extends Fragment implements TaskListener{
 
     private ListView listView;
     private TaskAdapter taskAdapter;
+    private Handler handler;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        handler=new Handler(Looper.getMainLooper(), new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message message) {
+                int id=message.getData().getInt("id");
+                Toast.makeText(getContext().getApplicationContext(),"id="+id,Toast.LENGTH_LONG);
+                return false;
+            }
+        });
 
+        alarmUtils=new AlarmUtils();
+        
         if(position==null || app==null){
             throw new RuntimeException("Debes sumisistrar position y app");
         }
@@ -76,7 +92,7 @@ public class SecondFragment extends Fragment implements TaskListener{
 
         //setupPreviousButton();
         setupAddButton();
-        setupDelAlarm();
+        setupCancelAlarm();
         setupAlarmText();
 
         try {
@@ -98,22 +114,26 @@ public class SecondFragment extends Fragment implements TaskListener{
         }
     }
 
-    private void setupDelAlarm() {
+    public void cancelAlarm(){
+        app.list.get(position).alarm = null;
+        save();
+        binding.buttonCancelAlarm.setVisibility(View.INVISIBLE);
+        setupAlarmText();
+        cancelAlarm(getContext(),app.list.get(position).id);
+    }
+
+    private void setupCancelAlarm() {
         if(app.list.get(position).alarm!=null) {
 
-            binding.buttonDelAlarm.setOnClickListener(new View.OnClickListener() {
+            binding.buttonCancelAlarm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    app.list.get(position).alarm = null;
-                    save();
-                    binding.buttonDelAlarm.setVisibility(View.INVISIBLE);
-                    setupAlarmText();
-                    AlarmUtils.cancelAlarm(getContext(),app.list.get(position).id);
+                    cancelAlarm();
                 }
             });
-            binding.buttonDelAlarm.setVisibility(View.VISIBLE);
+            binding.buttonCancelAlarm.setVisibility(View.VISIBLE);
         }else{
-            binding.buttonDelAlarm.setVisibility(View.INVISIBLE);
+            binding.buttonCancelAlarm.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -155,10 +175,10 @@ public class SecondFragment extends Fragment implements TaskListener{
                                 app.list.get(position).alarm=sdf.format(calendar.getTime());
                                 binding.buttonAlarm.setBackgroundResource(R.drawable.alarm_on);
 
-                                AlarmUtils.setAlarm(getContext(),calendar,app.list.get(position).id);
+                                setAlarm(getContext(),calendar,app.list.get(position).id);
 
 
-                                setupDelAlarm();
+                                setupCancelAlarm();
                                 setupAlarmText();
                                 save();
                             }
@@ -173,6 +193,28 @@ public class SecondFragment extends Fragment implements TaskListener{
                 dp.show();
             }
         });
+    }
+
+    private void setAlarm(Context context, Calendar calendar, int id){
+        Intent intent=new Intent(context.getApplicationContext(),AlarmUtils.class);
+        intent.putExtra("id",id);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(),id,intent,PendingIntent.FLAG_CANCEL_CURRENT);
+
+        AlarmManager aMgr=(AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        aMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+    }
+
+    private void cancelAlarm(Context context, int id){
+        TontiTaskList list=GsonUtils.getTontiTaskListById(context,id);
+        Toast.makeText(context,"quitando alarma de "+list.name,Toast.LENGTH_LONG).show();
+
+        Intent intent =  new Intent(context.getApplicationContext(),AlarmUtils.class);
+        intent.putExtra("id",id);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(),id,intent,PendingIntent.FLAG_CANCEL_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
     }
 
     private void setupAddButton() {

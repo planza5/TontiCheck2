@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.plm.tonticheck2.model.TontiApp;
+import com.plm.tonticheck2.model.TontiTaskList;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -51,5 +52,17 @@ public class GsonUtils {
     public static File getFile(Context ctx) {
         File file = new File(ctx.getFilesDir(), ctx.getString(R.string.json_file));
         return file;
+    }
+
+    public static TontiTaskList getTontiTaskListById(Context ctx,int id) {
+        TontiApp app=loadApp(getFile(ctx));
+
+        for(TontiTaskList ttl:app.list){
+            if(ttl.id==id){
+                return ttl;
+            }
+        }
+
+        return null;
     }
 }
