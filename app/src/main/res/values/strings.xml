@@ -14,4 +14,7 @@
     <string name="item_down">Mover abajo</string>
     <string name="delete_item">Eliminar</string>
     <string name="default_checklist_name">New Checklist...</string>
+    <string name="channel_id">tontichannel</string>
+    <string name="channel_description">channel for notifications</string>
+    <string name="channel_name">tontichannel</string>
 </resources>
