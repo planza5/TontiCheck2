@@ -39,6 +39,8 @@ public class SecondFragment extends Fragment implements TaskListener{
     private ListView listView;
     private TaskAdapter taskAdapter;
 
+    private AlarmUtils alarmUtils;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -48,6 +50,8 @@ public class SecondFragment extends Fragment implements TaskListener{
         if(position==null || app==null){
             throw new RuntimeException("Debes sumisistrar position y app");
         }
+
+        alarmUtils=new AlarmUtils();
 
         binding = FragmentSecondBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -89,7 +93,6 @@ public class SecondFragment extends Fragment implements TaskListener{
     private void setupAlarmText() {
         if(app.list.get(position).alarm==null){
             binding.alarmDateText.setText("");
-            binding.alarmTimeText.setText("");
         }else{
             String text=app.list.get(position).alarm;
             int idx=text.indexOf(" ");
@@ -107,13 +110,16 @@ public class SecondFragment extends Fragment implements TaskListener{
                     app.list.get(position).alarm = null;
                     save();
                     binding.buttonDelAlarm.setVisibility(View.INVISIBLE);
-                    setupAlarmText();
-                    AlarmUtils.cancelAlarm(getContext(),app.list.get(position).id);
+                    binding.alarmTimeText.setText("");
+                    binding.alarmDateText.setText("");
+                    alarmUtils.cancelAlarm(getContext(),app.list.get(position).id);
                 }
             });
             binding.buttonDelAlarm.setVisibility(View.VISIBLE);
         }else{
             binding.buttonDelAlarm.setVisibility(View.INVISIBLE);
+            binding.alarmTimeText.setText("");
+            binding.alarmDateText.setText("");
         }
     }
 
@@ -155,7 +161,7 @@ public class SecondFragment extends Fragment implements TaskListener{
                                 app.list.get(position).alarm=sdf.format(calendar.getTime());
                                 binding.buttonAlarm.setBackgroundResource(R.drawable.alarm_on);
 
-                                AlarmUtils.setAlarm(getContext(),calendar,app.list.get(position).id);
+                                alarmUtils.setAlarm(getContext(),calendar,app.list.get(position).id);
 
 
                                 setupDelAlarm();

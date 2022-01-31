@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:focusable="false">
 
-
     <EditText
         android:id="@+id/editTaskListItemName"
         android:selectAllOnFocus="true"
@@ -18,17 +17,13 @@
         android:inputType="textNoSuggestions"
         android:imeOptions="actionDone" />
 
-
-
     <ImageButton
         android:padding="20dp"
         android:layout_gravity="center"
         android:id="@+id/taskListMenuItem"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginRight="3dp"
         android:background="@drawable/menu" />
-
 
     <ImageButton
         android:padding="20dp"
@@ -37,7 +32,6 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@drawable/next" />
-
 
 
 </LinearLayout>

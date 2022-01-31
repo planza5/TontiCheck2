@@ -23,8 +23,6 @@
         android:inputType="textNoSuggestions"
         android:imeOptions="actionDone" />
 
-
-
     <ImageButton
         android:padding="20dp"
         android:layout_gravity="center"
