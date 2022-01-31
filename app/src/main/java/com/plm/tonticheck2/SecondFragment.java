@@ -104,20 +104,20 @@ public class SecondFragment extends Fragment implements TaskListener{
     private void setupDelAlarm() {
         if(app.list.get(position).alarm!=null) {
 
-            binding.buttonDelAlarm.setOnClickListener(new View.OnClickListener() {
+            binding.buttonCancelAlarm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     app.list.get(position).alarm = null;
                     save();
-                    binding.buttonDelAlarm.setVisibility(View.INVISIBLE);
+                    binding.buttonCancelAlarm.setVisibility(View.INVISIBLE);
                     binding.alarmTimeText.setText("");
                     binding.alarmDateText.setText("");
                     alarmUtils.cancelAlarm(getContext(),app.list.get(position).id);
                 }
             });
-            binding.buttonDelAlarm.setVisibility(View.VISIBLE);
+            binding.buttonCancelAlarm.setVisibility(View.VISIBLE);
         }else{
-            binding.buttonDelAlarm.setVisibility(View.INVISIBLE);
+            binding.buttonCancelAlarm.setVisibility(View.INVISIBLE);
             binding.alarmTimeText.setText("");
             binding.alarmDateText.setText("");
         }
