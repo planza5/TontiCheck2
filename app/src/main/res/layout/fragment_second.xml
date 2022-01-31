@@ -65,7 +65,7 @@
 
             <ImageButton
                 android:layout_marginVertical="10dp"
-                android:id="@+id/buttonDelAlarm"
+                android:id="@+id/button_cancel_alarm"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/cross"/>
