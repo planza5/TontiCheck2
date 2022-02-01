@@ -2,7 +2,6 @@ package com.plm.tonticheck2;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +12,10 @@ import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.plm.tonticheck2.databinding.FragmentSecondBinding;
+import com.plm.tonticheck2.model.MyViewModel;
 import com.plm.tonticheck2.model.TontiApp;
 import com.plm.tonticheck2.model.TontiTask;
 
@@ -23,18 +23,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public class SecondFragment extends Fragment implements TaskListener{
     private FragmentSecondBinding binding;
     private static SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     //TODO pasar esta variable desde firstfragment de otra forma
-    public static Integer position;
-    public static TontiApp app;
+    public Integer position;
+    public TontiApp app;
 
     private ListView listView;
     private TaskAdapter taskAdapter;
@@ -47,9 +44,6 @@ public class SecondFragment extends Fragment implements TaskListener{
             Bundle savedInstanceState
     ) {
 
-        if(position==null || app==null){
-            throw new RuntimeException("Debes sumisistrar position y app");
-        }
 
         alarmUtils=new AlarmUtils();
 
@@ -61,8 +55,9 @@ public class SecondFragment extends Fragment implements TaskListener{
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //setTitle
-        MainActivity ma=(MainActivity)getActivity();
+        app=getModel().getApp(getContext());
+        position=getModel().getPosition();
+
 
         //Setup taskAdapter
         taskAdapter=new TaskAdapter(this.getContext(),R.layout.task);
@@ -88,6 +83,11 @@ public class SecondFragment extends Fragment implements TaskListener{
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    private MyViewModel getModel(){
+        MyViewModel model=new ViewModelProvider(this).get(MyViewModel.class);
+        return model;
     }
 
     private void setupAlarmText() {
