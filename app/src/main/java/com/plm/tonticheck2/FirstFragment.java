@@ -64,7 +64,7 @@ public class FirstFragment extends Fragment implements TaskListListener {
         binding.buttonTaskListAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                taskListAdapter.add(new TontiTaskList(app));
+                taskListAdapter.add(new TontiTaskList());
                 save();
             }
         });
@@ -81,7 +81,10 @@ public class FirstFragment extends Fragment implements TaskListListener {
     public void save() {
         taskListAdapter.notifyDataSetChanged();
         listView.invalidate();
-        boolean result = GsonUtils.saveApp(adapterToTontiTask(taskListAdapter), GsonUtils.getFile(this.getContext()));
+        app=adapterToTontiTask(taskListAdapter);
+
+        boolean result = GsonUtils.saveApp(app, GsonUtils.getFile(this.getContext()));
+        new ViewModelProvider(this).get(MyViewModel.class).setApp(app);
     }
 
     @Override

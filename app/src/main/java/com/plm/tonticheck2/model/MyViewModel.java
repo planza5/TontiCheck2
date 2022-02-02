@@ -27,4 +27,7 @@ public class MyViewModel extends ViewModel {
         return app;
     }
 
+    public void setApp(TontiApp app) {
+        this.app=app;
+    }
 }

@@ -6,4 +6,11 @@ public class TontiTask {
     public String toString(){
         return name;
     }
+
+    public TontiTask getClone() {
+        TontiTask tt=new TontiTask();
+        tt.name=name;
+        tt.done=done;
+        return tt;
+    }
 }
