@@ -18,7 +18,6 @@ import com.plm.tonticheck2.model.TontiApp;
 import com.plm.tonticheck2.model.TontiTaskList;
 
 public class FirstFragment extends Fragment implements TaskListListener {
-    private TontiApp app;
     private FragmentFirstBinding binding;
     private ListView listView;
     private TaskListAdapter taskListAdapter;
@@ -29,7 +28,6 @@ public class FirstFragment extends Fragment implements TaskListListener {
             Bundle savedInstanceState
     ) {
         binding = FragmentFirstBinding.inflate(inflater, container, false);
-        app=new ViewModelProvider(this).get(MyViewModel.class).getApp(getContext());
         return binding.getRoot();
     }
 
@@ -44,7 +42,7 @@ public class FirstFragment extends Fragment implements TaskListListener {
         //Añadimos tassklist y borramos alarmas pasadas
         boolean thereIsAlarmsInThePast=false;
 
-        for(TontiTaskList tasklist:app.list){
+        for(TontiTaskList tasklist:getModel().getApp(getContext()).list){
             taskListAdapter.add(tasklist);
 
             if(tasklist.alarm!=null && AlarmUtils.isInThePast(tasklist.alarm)){
@@ -81,15 +79,21 @@ public class FirstFragment extends Fragment implements TaskListListener {
     public void save() {
         taskListAdapter.notifyDataSetChanged();
         listView.invalidate();
-        app=adapterToTontiTask(taskListAdapter);
+        TontiApp app=adapterToTontiTask(taskListAdapter);
 
         boolean result = GsonUtils.saveApp(app, GsonUtils.getFile(this.getContext()));
-        new ViewModelProvider(this).get(MyViewModel.class).setApp(app);
+        getModel().setApp(app);
+    }
+
+    private MyViewModel getModel(){
+        MyViewModel model=new ViewModelProvider(this).get(MyViewModel.class);
+        return model;
     }
 
     @Override
     public void taskListSelected(int position) {
-        new ViewModelProvider(this).get(MyViewModel.class).setPosition(position);
+        MyViewModel m=getModel();
+        m.setPosition(position);
 
         NavController nhf = NavHostFragment.findNavController(FirstFragment.this);
 

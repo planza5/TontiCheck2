@@ -55,8 +55,9 @@ public class SecondFragment extends Fragment implements TaskListener{
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        app=getModel().getApp(getContext());
-        position=getModel().getPosition();
+        MyViewModel m=getModel();
+        app=m.getApp(getContext());
+        position=m.getPosition();
 
 
         //Setup taskAdapter
@@ -84,6 +85,8 @@ public class SecondFragment extends Fragment implements TaskListener{
             e.printStackTrace();
         }
     }
+
+
 
     private MyViewModel getModel(){
         MyViewModel model=new ViewModelProvider(this).get(MyViewModel.class);
