@@ -86,7 +86,7 @@ public class FirstFragment extends Fragment implements TaskListListener {
     }
 
     private MyViewModel getModel(){
-        MyViewModel model=new ViewModelProvider(this).get(MyViewModel.class);
+        MyViewModel model=new ViewModelProvider(this.getActivity()).get(MyViewModel.class);
         return model;
     }
 

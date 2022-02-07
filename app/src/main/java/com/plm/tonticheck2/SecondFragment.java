@@ -89,7 +89,7 @@ public class SecondFragment extends Fragment implements TaskListener{
 
 
     private MyViewModel getModel(){
-        MyViewModel model=new ViewModelProvider(this).get(MyViewModel.class);
+        MyViewModel model=new ViewModelProvider(this.getActivity()).get(MyViewModel.class);
         return model;
     }
 
