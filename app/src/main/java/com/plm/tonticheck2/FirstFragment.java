@@ -13,7 +13,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.plm.tonticheck2.databinding.FragmentFirstBinding;
-import com.plm.tonticheck2.model.MyViewModel;
+import com.plm.tonticheck2.model.MySharedModel;
 import com.plm.tonticheck2.model.TontiApp;
 import com.plm.tonticheck2.model.TontiTaskList;
 
@@ -21,12 +21,14 @@ public class FirstFragment extends Fragment implements TaskListListener {
     private FragmentFirstBinding binding;
     private ListView listView;
     private TaskListAdapter taskListAdapter;
+    MySharedModel model=null;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        model=new ViewModelProvider(requireActivity()).get(MySharedModel.class);
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -42,7 +44,7 @@ public class FirstFragment extends Fragment implements TaskListListener {
         //Añadimos tassklist y borramos alarmas pasadas
         boolean thereIsAlarmsInThePast=false;
 
-        for(TontiTaskList tasklist:getModel().getApp(getContext()).list){
+        for(TontiTaskList tasklist:model.getApp(getContext()).list){
             taskListAdapter.add(tasklist);
 
             if(tasklist.alarm!=null && AlarmUtils.isInThePast(tasklist.alarm)){
@@ -82,18 +84,13 @@ public class FirstFragment extends Fragment implements TaskListListener {
         TontiApp app=adapterToTontiTask(taskListAdapter);
 
         boolean result = GsonUtils.saveApp(app, GsonUtils.getFile(this.getContext()));
-        getModel().setApp(app);
+        model.setApp(app);
     }
 
-    private MyViewModel getModel(){
-        MyViewModel model=new ViewModelProvider(this.getActivity()).get(MyViewModel.class);
-        return model;
-    }
 
     @Override
     public void taskListSelected(int position) {
-        MyViewModel m=getModel();
-        m.setPosition(position);
+        model.setPosition(position);
 
         NavController nhf = NavHostFragment.findNavController(FirstFragment.this);
 

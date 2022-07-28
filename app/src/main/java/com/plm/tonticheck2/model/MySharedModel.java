@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.plm.tonticheck2.GsonUtils;
 
-public class MyViewModel extends ViewModel {
+public class MySharedModel extends ViewModel {
     private TontiApp app;
     private int position;
 

@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.plm.tonticheck2.databinding.FragmentSecondBinding;
-import com.plm.tonticheck2.model.MyViewModel;
+import com.plm.tonticheck2.model.MySharedModel;
 import com.plm.tonticheck2.model.TontiApp;
 import com.plm.tonticheck2.model.TontiTask;
 
@@ -24,18 +24,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-public class SecondFragment extends Fragment implements TaskListener{
+public class SecondFragment extends Fragment implements TaskListener, Observer {
     private FragmentSecondBinding binding;
     private static SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-    //TODO pasar esta variable desde firstfragment de otra forma
-    public Integer position;
+    public int position;
     public TontiApp app;
 
     private ListView listView;
     private TaskAdapter taskAdapter;
-
+    private MySharedModel model;
     private AlarmUtils alarmUtils;
 
     @Override
@@ -44,7 +45,9 @@ public class SecondFragment extends Fragment implements TaskListener{
             Bundle savedInstanceState
     ) {
 
-
+        model=new ViewModelProvider(requireActivity()).get(MySharedModel.class);
+        app=model.getApp(requireActivity());
+        position=model.getPosition();
         alarmUtils=new AlarmUtils();
 
         binding = FragmentSecondBinding.inflate(inflater, container, false);
@@ -55,9 +58,6 @@ public class SecondFragment extends Fragment implements TaskListener{
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MyViewModel m=getModel();
-        app=m.getApp(getContext());
-        position=m.getPosition();
 
 
         //Setup taskAdapter
@@ -87,11 +87,6 @@ public class SecondFragment extends Fragment implements TaskListener{
     }
 
 
-
-    private MyViewModel getModel(){
-        MyViewModel model=new ViewModelProvider(this.getActivity()).get(MyViewModel.class);
-        return model;
-    }
 
     private void setupAlarmText() {
         if(app.list.get(position).alarm==null){
@@ -238,5 +233,10 @@ public class SecondFragment extends Fragment implements TaskListener{
         app.list.get(position).list=list;
 
         return app;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        System.out.println("Observer!!!!!!!!!!!");
     }
 }

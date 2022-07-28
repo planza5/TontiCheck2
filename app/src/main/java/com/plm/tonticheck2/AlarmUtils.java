@@ -17,9 +17,14 @@ import com.plm.tonticheck2.model.TontiTaskList;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 public class AlarmUtils extends BroadcastReceiver {
+    private static Observable observable;
     private static SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+
 
     public static boolean isInThePast(String alarm) {
         try{
@@ -30,6 +35,10 @@ public class AlarmUtils extends BroadcastReceiver {
     }
 
     public void setAlarm(Context context, Calendar calendar, int id){
+        if(observable==null){
+            observable=new Observable();
+        }
+
         Intent intent=new Intent(context.getApplicationContext(),AlarmUtils.class);
         intent.putExtra("id",id);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(),id,intent,PendingIntent.FLAG_CANCEL_CURRENT);
