@@ -46,7 +46,14 @@ public class SecondFragment extends Fragment implements TaskListener, Observer {
     ) {
 
         model=new ViewModelProvider(requireActivity()).get(MySharedModel.class);
-        app=model.getApp(requireActivity());
+
+        try {
+            app=model.getApp(requireActivity());
+        } catch (Exception e) {
+            e.printStackTrace();
+            getActivity().finishActivity(0);
+            System.exit(0);
+        }
         position=model.getPosition();
         alarmUtils=new AlarmUtils();
 

@@ -44,7 +44,17 @@ public class FirstFragment extends Fragment implements TaskListListener {
         //Añadimos tassklist y borramos alarmas pasadas
         boolean thereIsAlarmsInThePast=false;
 
-        for(TontiTaskList tasklist:model.getApp(getContext()).list){
+        TontiApp theapp = null;
+
+        try {
+            theapp=model.getApp(getContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+            getActivity().finishActivity(0);
+            System.exit(0);
+        }
+
+        for(TontiTaskList tasklist:theapp.list){
             taskListAdapter.add(tasklist);
 
             if(tasklist.alarm!=null && AlarmUtils.isInThePast(tasklist.alarm)){
