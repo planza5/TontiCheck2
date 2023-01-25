@@ -17,4 +17,6 @@
     <string name="channel_id">tontichannel</string>
     <string name="channel_description">channel for notifications</string>
     <string name="channel_name">tontichannel</string>
+    <string name="action_export_json">Export Json</string>
+    <string name="action_import_json">Import_json</string>
 </resources>

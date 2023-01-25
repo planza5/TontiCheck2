@@ -1,36 +1,59 @@
 package com.plm.tonticheck2;
 
+import static com.plm.tonticheck2.Ctes.TAG;
+
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.gson.Gson;
 import com.plm.tonticheck2.databinding.ActivityMainBinding;
+import com.plm.tonticheck2.model.MySharedModel;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
 
+    private static final int ACTION_EXPORT = 111;
+    private static final int ACTION_IMPORT = 222;
+    private static final String ACTION_EXPORT_OR_IMPORT = "EXPORT_OR_IMPORT";
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-
+    private ActivityResultLauncher<Intent> activityResult;
+private int counter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         //GsonUtils.deleteFile(this);
+
 
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -43,6 +66,55 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        activityResult=registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        int type=result.getResultCode();
+
+                        if(result.getResultCode() != Activity.RESULT_OK){
+                            Log.d(TAG,"Error en acivity result");
+                            return;
+                        }
+
+                        int test=getIntent().getIntExtra(ACTION_EXPORT_OR_IMPORT,-1);
+                        Bundle bundle = result.getData().getExtras();
+                        int extra=result.getData().getIntExtra(ACTION_EXPORT_OR_IMPORT,-1);
+
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG,"c="+counter);
+                                counter++;
+                            }
+                        }, 0, 1000);
+
+                        Uri uri = result.getData().getData();
+
+                        try{
+                            if(extra==ACTION_EXPORT){
+                                byte b[]=GsonUtils.readUri(MainActivity.this,uri);
+                                String s=new String(b);
+                                System.out.println(s);
+                            }else if(extra==ACTION_IMPORT){
+                                MySharedModel model = new ViewModelProvider(MainActivity.this).get(MySharedModel.class);
+                                GsonUtils.saveApp(model.getApp(MainActivity.this),new File(uri.getPath()));
+                                Log.d(TAG,"Saving app!!!");
+                            }else{
+                                Log.d(TAG,"Valor inesperdado");
+                            }
+                        }catch(Exception ex){
+                            ex.printStackTrace();
+                        }
+
+
+
+                        Log.d(TAG,"Result");
+                    }
+                });
+
     }
 
     @Override
@@ -60,7 +132,22 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_export_json) {
+            //export
+            Intent intent=new Intent();
+            intent.setAction(Intent.ACTION_CREATE_DOCUMENT);
+            intent.setType("*/*");
+            intent.putExtra(ACTION_EXPORT_OR_IMPORT,ACTION_EXPORT);
+            activityResult.launch(Intent.createChooser(intent,"Export  File"));
+            return true;
+        } else if (id == R.id.action_import_json) {
+            //import
+            Intent intent=new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            intent.putExtra(ACTION_EXPORT_OR_IMPORT,ACTION_IMPORT);
+
+            activityResult.launch(Intent.createChooser(intent,"Import  File"));
             return true;
         }
 
@@ -80,19 +167,6 @@ public class MainActivity extends AppCompatActivity {
         return appBarConfiguration;
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+
+
 }

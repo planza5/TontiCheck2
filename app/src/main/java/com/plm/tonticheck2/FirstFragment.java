@@ -1,6 +1,9 @@
 package com.plm.tonticheck2;
 
+import static com.plm.tonticheck2.Ctes.TAG;
+
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,8 @@ public class FirstFragment extends Fragment implements TaskListListener {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        //GsonUtils.deleteFile(getContext());
+
         model=new ViewModelProvider(requireActivity()).get(MySharedModel.class);
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -44,28 +49,10 @@ public class FirstFragment extends Fragment implements TaskListListener {
         //Añadimos tassklist y borramos alarmas pasadas
         boolean thereIsAlarmsInThePast=false;
 
-        TontiApp theapp = null;
 
-        try {
-            theapp=model.getApp(getContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-            getActivity().finishActivity(0);
-            System.exit(0);
-        }
 
-        for(TontiTaskList tasklist:theapp.list){
-            taskListAdapter.add(tasklist);
 
-            if(tasklist.alarm!=null && AlarmUtils.isInThePast(tasklist.alarm)){
-                tasklist.alarm=null;
-                thereIsAlarmsInThePast=true;
-            }
-        }
 
-        if(thereIsAlarmsInThePast){
-            save();
-        }
 
         taskListAdapter.addListener(this);
         listView.setAdapter(taskListAdapter);
@@ -79,6 +66,31 @@ public class FirstFragment extends Fragment implements TaskListListener {
             }
         });
 
+        TontiApp theapp = null;
+
+        try {
+            theapp=model.getApp(getContext());
+
+            Log.d(TAG,"");
+            if(theapp != null && theapp.list != null){
+                for(TontiTaskList tasklist:theapp.list){
+                    taskListAdapter.add(tasklist);
+
+                    if(tasklist.alarm!=null && AlarmUtils.isInThePast(tasklist.alarm)){
+                        tasklist.alarm=null;
+                        thereIsAlarmsInThePast=true;
+                    }
+                }
+
+                if(thereIsAlarmsInThePast){
+                    save();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            getActivity().finishActivity(0);
+            System.exit(0);
+        }
     }
 
     @Override
