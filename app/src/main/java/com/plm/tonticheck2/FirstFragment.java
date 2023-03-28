@@ -49,11 +49,6 @@ public class FirstFragment extends Fragment implements TaskListListener {
         //Añadimos tassklist y borramos alarmas pasadas
         boolean thereIsAlarmsInThePast=false;
 
-
-
-
-
-
         taskListAdapter.addListener(this);
         listView.setAdapter(taskListAdapter);
 
@@ -71,7 +66,6 @@ public class FirstFragment extends Fragment implements TaskListListener {
         try {
             theapp=model.getApp(getContext());
 
-            Log.d(TAG,"");
             if(theapp != null && theapp.list != null){
                 for(TontiTaskList tasklist:theapp.list){
                     taskListAdapter.add(tasklist);
@@ -105,7 +99,7 @@ public class FirstFragment extends Fragment implements TaskListListener {
         listView.invalidate();
         TontiApp app=adapterToTontiTask(taskListAdapter);
 
-        boolean result = GsonUtils.saveApp(app, GsonUtils.getFile(this.getContext()));
+        boolean result = GsonUtils.saveApp(this.getContext(),app);
         model.setApp(app);
     }
 

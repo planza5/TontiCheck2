@@ -225,7 +225,7 @@ public class SecondFragment extends Fragment implements TaskListener, Observer {
     public void save() {
         taskAdapter.notifyDataSetChanged();
         listView.invalidate();
-        boolean result = GsonUtils.saveApp(adapterToTontiTask(taskAdapter), GsonUtils.getFile(this.getContext()));
+        boolean result = GsonUtils.saveApp(this.getContext(),adapterToTontiTask(taskAdapter));
     }
 
 

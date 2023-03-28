@@ -3,40 +3,37 @@ package com.plm.tonticheck2;
 import static com.plm.tonticheck2.Ctes.TAG;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.ActivityNotFoundException;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.gson.Gson;
 import com.plm.tonticheck2.databinding.ActivityMainBinding;
 import com.plm.tonticheck2.model.MySharedModel;
+import com.plm.tonticheck2.model.TontiApp;
+import com.plm.tonticheck2.model.TontiTask;
 
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private ActivityResultLauncher<Intent> activityResult;
-private int counter;
+    private int counter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,32 +72,25 @@ private int counter;
                         int type=result.getResultCode();
 
                         if(result.getResultCode() != Activity.RESULT_OK){
-                            Log.d(TAG,"Error en acivity result");
+                            Log.d(TAG,"Error en activity result");
                             return;
                         }
 
-                        int test=getIntent().getIntExtra(ACTION_EXPORT_OR_IMPORT,-1);
-                        Bundle bundle = result.getData().getExtras();
-                        int extra=result.getData().getIntExtra(ACTION_EXPORT_OR_IMPORT,-1);
 
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                Log.d(TAG,"c="+counter);
-                                counter++;
-                            }
-                        }, 0, 1000);
 
-                        Uri uri = result.getData().getData();
+                        //TODO DELETE
+                        int extra=new ViewModelProvider(MainActivity.this).get(MySharedModel.class).getExtraInt(ACTION_EXPORT_OR_IMPORT);
 
                         try{
                             if(extra==ACTION_EXPORT){
-                                byte b[]=GsonUtils.readUri(MainActivity.this,uri);
-                                String s=new String(b);
-                                System.out.println(s);
+                                TontiApp app = new ViewModelProvider(MainActivity.this).get(MySharedModel.class).getApp(MainActivity.this);
+                                GsonUtils.saveAppToUri(MainActivity.this,result.getData().getData());
+
                             }else if(extra==ACTION_IMPORT){
-                                MySharedModel model = new ViewModelProvider(MainActivity.this).get(MySharedModel.class);
-                                GsonUtils.saveApp(model.getApp(MainActivity.this),new File(uri.getPath()));
+                                TontiApp importedApp = GsonUtils.loadAppFromUri(MainActivity.this,result.getData().getData());
+                                TontiApp actualApp = new ViewModelProvider(MainActivity.this).get(MySharedModel.class).getApp(MainActivity.this);
+                                buildImportDialog(importedApp,actualApp);
+
                                 Log.d(TAG,"Saving app!!!");
                             }else{
                                 Log.d(TAG,"Valor inesperdado");
@@ -114,6 +104,55 @@ private int counter;
                         Log.d(TAG,"Result");
                     }
                 });
+
+    }
+
+    private void buildImportDialog(TontiApp importedApp, TontiApp actualApp)  {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Importar Archivo");
+        builder.setMessage("Como quieres importar el archivo?");
+
+        builder.setPositiveButton("Añadir a los datos existentes",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG,"positive");
+
+                boolean result=importedApp.list.addAll(actualApp.list);
+
+                if(result){
+                    GsonUtils.saveApp(MainActivity.this,importedApp);
+                    restartActivity();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Reemplazar datos existentes",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                GsonUtils.saveApp(MainActivity.this,importedApp);
+                restartActivity();
+            }
+        });
+
+        builder.setNeutralButton("Cancelar",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG,"neutral");
+            }
+        });
+
+
+        builder.create().show();
+    }
+
+    private void restartActivity(){
+        Intent intent = getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        overridePendingTransition(0, 0);
+
+        startActivity(intent);
+        overridePendingTransition(0, 0);
 
     }
 
@@ -137,7 +176,10 @@ private int counter;
             Intent intent=new Intent();
             intent.setAction(Intent.ACTION_CREATE_DOCUMENT);
             intent.setType("*/*");
-            intent.putExtra(ACTION_EXPORT_OR_IMPORT,ACTION_EXPORT);
+
+            //intent.putExtra(ACTION_EXPORT_OR_IMPORT,ACTION_EXPORT);
+            new ViewModelProvider(MainActivity.this).get(MySharedModel.class).putExtraInt(ACTION_EXPORT_OR_IMPORT,ACTION_EXPORT);
+
             activityResult.launch(Intent.createChooser(intent,"Export  File"));
             return true;
         } else if (id == R.id.action_import_json) {
@@ -145,8 +187,8 @@ private int counter;
             Intent intent=new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");
-            intent.putExtra(ACTION_EXPORT_OR_IMPORT,ACTION_IMPORT);
-
+            //intent.putExtra(ACTION_EXPORT_OR_IMPORT,ACTION_IMPORT);
+            new ViewModelProvider(MainActivity.this).get(MySharedModel.class).putExtraInt(ACTION_EXPORT_OR_IMPORT,ACTION_IMPORT);
             activityResult.launch(Intent.createChooser(intent,"Import  File"));
             return true;
         }

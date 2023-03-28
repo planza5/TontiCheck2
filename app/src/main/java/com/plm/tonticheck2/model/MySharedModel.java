@@ -1,6 +1,7 @@
 package com.plm.tonticheck2.model;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.lifecycle.ViewModel;
 
@@ -11,6 +12,7 @@ import com.plm.tonticheck2.R;
 public class MySharedModel extends ViewModel {
     private TontiApp app;
     private int position;
+    private Bundle bundle=new Bundle();
 
     public int getPosition() {
         return position;
@@ -23,12 +25,12 @@ public class MySharedModel extends ViewModel {
     
     public TontiApp getApp(Context ctx) throws Exception{
         if (app == null) {
-            app=GsonUtils.loadApp(GsonUtils.getFile(ctx));
+            app=GsonUtils.loadApp(ctx);
         }
 
         if(app==null){
             app=new TontiApp();
-            boolean result=GsonUtils.saveApp(app, GsonUtils.getFile(ctx));
+            boolean result=GsonUtils.saveApp(ctx,app);
 
             if(result==false){
                 throw new Exception("No fue posible cargar la app del modelo");
@@ -41,5 +43,13 @@ public class MySharedModel extends ViewModel {
 
     public void setApp(TontiApp app) {
         this.app=app;
+    }
+
+    public void putExtraInt(String name,int n){
+        bundle.putInt(name,n);
+    }
+
+    public int getExtraInt(String name){
+        return bundle.getInt(name);
     }
 }
