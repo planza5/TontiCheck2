@@ -3,6 +3,7 @@
     package="com.plm.tonticheck2">
 
     <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"></uses-permission>
 
     <application
         android:allowBackup="true"

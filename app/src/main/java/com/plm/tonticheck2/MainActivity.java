@@ -4,9 +4,12 @@ import static com.plm.tonticheck2.Ctes.TAG;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
@@ -64,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
+        createNotificationChannel();
+
         activityResult=registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -105,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        if(getIntent()!=null){
+            if(getIntent().getIntExtra("id",-111)==-111){
+                Log.d(Ctes.TAG,"Arrancada la aplicación");
+            }else{
+                Log.d(Ctes.TAG,"Desed notificacion");
+            }
+        }
+        //comprobamos si viene desde pulsar una notificación
     }
 
     private void buildImportDialog(TontiApp importedApp, TontiApp actualApp)  {
@@ -202,6 +215,23 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = getString(R.string.channel_id);
+            CharSequence channelName =getString(R.string.channel_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
+            notificationChannel.setDescription(getString(R.string.channel_description));
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
     }
 
 
